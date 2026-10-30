@@ -162,7 +162,7 @@ Pipeline design, implementation, analysis and manuscript — **Shravya R. S.**
 ([@ShravyaRS](https://github.com/ShravyaRS) · [ORCID](https://orcid.org/0009-0006-8013-7892)),
 Department of Biotechnology and Bioinformatics, JSS Academy of Higher Education and Research, Mysuru.
 
-Study supervision — Prof. Tiratha Raj Singh, CEHTI, Jaypee University of Information Technology.
+Study supervision — [Prof. Tiratha Raj Singh](http://www.bioinfoindia.org/raj), CEHTI, Jaypee University of Information Technology.
 
 Somatic variant and expression data from [TCGA](https://portal.gdc.cancer.gov) via the Genomic Data Commons.
 
