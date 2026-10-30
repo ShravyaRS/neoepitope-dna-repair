@@ -1,131 +1,180 @@
-<div align="center">
+# ProteinForgeR — Autoregressive Transformer for Protein Sequence Generation
 
-# Neoepitope Prediction Integrated with DNA Repair Gene Profiling
+A **comprehensive** protein sequence generator with **structural, functional, and biological validation**. Built in R using `torch`, this pipeline doesn't just generate sequences - it validates them for realistic protein folding, functional motifs, and host interactions.
 
-**Shared missense neoepitopes across 29 DNA-repair genes in TCGA BRCA, COAD and OV**
+## Key Features
 
-[![Paper](https://img.shields.io/badge/Paper-Comput%20Biol%20Chem-B31B1B)](https://www.sciencedirect.com/journal/computational-biology-and-chemistry)
-[![Data](https://img.shields.io/badge/Data%20%26%20Code-10.5281%2Fzenodo.23376031-1682D4)](https://doi.org/10.5281/zenodo.23376031)
-[![License](https://img.shields.io/badge/License-CC--BY--4.0-green)](https://creativecommons.org/licenses/by/4.0/)
-[![ORCID](https://img.shields.io/badge/ORCID-0009--0006--8013--7892-A6CE39)](https://orcid.org/0009-0006-8013-7892)
+**STRUCTURAL VALIDATION**
+- ESMFold & ColabFold structure prediction
+- Folding stability analysis (FoldX, Rosetta, empirical)
+- Quality assessment (Ramachandran, radius of gyration, ProSA-like scoring)
 
-<img src="figures/Graphical_Abstract.png" width="860" alt="Graphical abstract">
+**FUNCTIONAL VALIDATION**  
+- Active site & catalytic motif detection
+- Critical residue conservation analysis
+- Signal peptides, localization signals, binding domains
+- Influenza-specific validation (HA receptor binding, cleavage sites)
 
-</div>
+**HOST INTERACTION ANALYSIS**
+- Protein-protein interaction prediction (STRING database)
+- Domain-based interaction mapping
+- Biological pathway analysis (KEGG, Reactome-style)
+- Host dependency & pathogenicity risk assessment
 
----
+**HIGH-THROUGHPUT GENERATION**
+- Batched autoregressive transformer 
+- Temperature, top-k, nucleus sampling
+- Configurable model sizes (2M - 50M+ parameters)
 
-## What this is
+## Architecture
 
-Most neoantigen pipelines rank peptides one patient at a time. This one asks a different question:
-**which missense neoepitopes are produced by more than one mutation?**
+- **Model**: Decoder-only Transformer with causal (autoregressive) masking
+- **Tokenization**: Character-level (20 standard amino acids + special tokens)
+- **Training Objective**: Next-token prediction (cross-entropy)
+- **Validation**: Multi-layered structural, functional, and interaction analysis
 
-Peptides shared across mutations sit between a fully personalised vaccine and an off-the-shelf one,
-and that redundancy is rarely measured. Here it is measured directly, as a bipartite
-mutation–peptide graph over a defined 29-gene DNA-repair set.
+## Quick Start
 
-Accepted in *Computational Biology and Chemistry* (Elsevier), 28 October 2026.
+```r
+# 1. Install dependencies
+source("R/01_install_dependencies.R")
 
-## Headline numbers
+# 2. Place your FASTA file(s) in data/
+#    e.g., data/uniprot_sprot.fasta
 
-| | |
-|---|---|
-| Somatic calls screened | 516,309 → 2,430 variants → **1,419** missense calls |
-| Distinct variants / samples | 885 variants across 877 tumour samples |
-| Peptide windows | **53,683** 8–11mers from 1,417 productive calls |
-| Peptide–HLA predictions | **429,464** (8 population HLA class I alleles) |
-| Unique mutant peptides | **33,405** |
-| Shared by >1 mutation | **5,420** (16.2%) |
-| Hub peptides (degree > 5) | **836** (2.5%) — all TP53 |
-| Stringent candidates | **73** class I (32 also clear wild-type > 5,000 nM), **127** class II |
+# 3. Configure validation (edit R/08_run_pipeline.R)
+config$protein_family <- "influenza"     # or "general", "enzyme" 
+config$organism_type <- "virus"          # or "bacteria", "general"
+config$n_structural_analysis <- 50       # Number of structures to predict
 
-Every one of these is reproducible from the deposited data.
-
-## Pipeline
-
-```
-TCGA somatic calls (BRCA, COAD, OV)
-        │  29 DNA-repair genes, missense only
-        ▼
-   1,419 sample-level calls  ──►  53,683 peptide windows (8–11mer)
-        │
-        ▼
-NetMHCpan 4.1 + MHCflurry 2.0 (via pVACseq)   ──►  429,464 peptide–HLA predictions
-IEDB class II tools (NetMHCIIpan)             ──►  105,495 class II predictions
-        │
-        ├──► bipartite mutation–peptide graph ──► degree, hubs, super-hubs
-        │
-        └──► composite score ──► ranked candidates ──► stringent affinity filter
+# 4. Run the full pipeline
+source("R/08_run_pipeline.R")
 ```
 
-## Composite score
+## Validation Pipeline
 
 ```
-S = 40·s(IC50) + 20·s(FC) + 20·s(share) + 20·s(gene)
-
-s(IC50)  = 1 − (IC50 − 2)/(49,328 − 2)        linear min–max
-s(FC)    = min(fold change, 100)/100           hard cap
-s(share) = min(prediction rows, 100)/100       hard cap
-s(gene)  = TP53 1.0 · BRCA1/2 0.95 · ATM 0.9 · MSH2/MLH1 0.85 · POLE/ATR 0.8 · others 0.7
+Generated Sequences
+        ↓
+Sequence Statistics (AA composition, length, k-mers)
+        ↓  
+Structure Prediction (ESMFold/ColabFold)
+        ↓
+Stability Assessment (FoldX energy, thermodynamics)
+        ↓
+Functional Analysis (motifs, active sites, conservation)
+        ↓
+Host Interactions (PPI, pathways, binding partners)
+        ↓
+Comprehensive Report (structural quality, functional score, risk assessment)
 ```
 
-Two properties worth stating plainly, because they drive the ranking: `s(IC50)` is linear on an
-absolute nanomolar scale, so every peptide binding below 500 nM scores 39.60–40.00 of 40 — the
-affinity term barely discriminates among binders. And 18.2% of predictions reach the sharing cap
-against 0.04% for fold change. **The ranking is therefore driven by sharing and the gene prior
-rather than by predicted affinity**, which is reported openly in the paper rather than glossed.
-
-## Repository layout
+## Project Structure
 
 ```
-code/      analysis and verification scripts
-figures/   figures as published
-docs/      reproduction notes and environment
+protein-transformer-r/
+├── R/
+│   ├── 01_install_dependencies.R   # Package installation
+│   ├── 02_tokenizer.R              # Amino acid tokenizer
+│   ├── 03_data_loader.R            # FASTA parser & batched data loader
+│   ├── 04_model.R                  # Transformer architecture (torch)
+│   ├── 05_train.R                  # Training loop with logging
+│   ├── 06_generate.R               # Sequence generation & sampling
+│   ├── 07_evaluate.R               # Quality metrics & analysis
+│   ├── 08_run_pipeline.R           # Full end-to-end pipeline
+│   ├── 09_structural_prediction.R  # Structure prediction (ESMFold/ColabFold)
+│   ├── 10_stability_prediction.R   # Thermodynamic stability analysis
+│   ├── 11_functional_validation.R  # Functional motifs & critical residues
+│   └── 12_host_interaction_analysis.R # Host-pathogen interactions
+├── data/                           # Place your .fasta files here
+├── models/                         # Saved model checkpoints
+├── outputs/                        # Generated sequences & validation reports
+└── README.md
 ```
 
-## Data
+## Configuration
 
-All inputs and outputs live in the Zenodo deposit, not here — the prediction tables run to
-hundreds of megabytes:
+Edit the config block in `08_run_pipeline.R`:
 
-**https://doi.org/10.5281/zenodo.23376031**
-
-Thirty files: the mutation list, the full class I and class II prediction tables, the
-mutation–peptide edge list, network degrees, the composite-score components, nine supplementary
-tables, the pipeline code, and a pinned environment specification. CC-BY-4.0.
-
-## Reproducing
-
-```bash
-pip install -r code/requirements.txt
+```r
+config <- list(
+  # Model architecture
+  d_model = 256, n_heads = 8, n_layers = 6,
+  
+  # Training  
+  n_epochs = 30, batch_size = 32, learning_rate = 3e-4,
+  
+  # Generation
+  n_generate = 500, temperature = 0.8, top_k = 40, top_p = 0.95,
+  
+  # Validation (NEW!)
+  n_structural_analysis = 50,        # Structure prediction count
+  n_functional_analysis = 100,       # Functional analysis count
+  protein_family = "influenza",      # Family-specific validation
+  organism_type = "virus",           # Host interaction analysis
+  structure_method = "esmfold"       # Structure predictor
+)
 ```
 
-See [`docs/REPRODUCE.md`](docs/REPRODUCE.md) for the execution order. External predictors
-(NetMHCpan 4.1, MHCflurry 2.0, NetMHCIIpan) are not redistributable, but their outputs are
-deposited, so every downstream step can be rerun without them.
+## Output Files
 
-## Citation
+**Generation:**
+- `generated_proteins.fasta` — Generated sequences
+- `aa_composition.png` — Amino acid frequency comparison
+- `training_curves.png` — Loss and perplexity plots
 
-> Shravya R. S., Pallavi B., Singh T. R. Neoepitope Prediction Integrated with DNA Repair Gene
-> Profiling for Precision Oncology. *Computational Biology and Chemistry* (2026).
-> doi:10.1016/j.compbiolchem.2026.xxxxxx
+**Structural Validation:**
+- `structures/*.pdb` — Predicted protein structures  
+- Quality scores (Ramachandran, compactness, B-factors)
 
-Dataset:
+**Functional Analysis:**
+- Detected motifs (kinase sites, signal peptides, zinc fingers)
+- Active site predictions (catalytic triads, binding pockets)
+- Conservation analysis vs. reference sequences
 
-> Shravya R. S., Pallavi B., Singh T. R. (2026). *Neoepitope prediction integrated with DNA repair
-> gene profiling: mutation list, peptide–HLA predictions, network links and composite-score
-> components* \[Data set]. Zenodo. https://doi.org/10.5281/zenodo.23376031
+**Host Interactions:**
+- Protein-protein interaction predictions
+- Biological pathway mappings
+- Pathogenicity risk assessment
 
-## Credits
+## External Tool Integration
 
-Pipeline design, implementation, analysis and manuscript — **Shravya R. S.**
-([@ShravyaRS](https://github.com/ShravyaRS) · [ORCID](https://orcid.org/0009-0006-8013-7892)),
-Department of Biotechnology and Bioinformatics, JSS Academy of Higher Education and Research, Mysuru.
+**Structure Prediction:**
+- ESMFold (Meta) — Fast, no installation required
+- ColabFold (AlphaFold2) — High accuracy, requires API
+- Mock structures for development/testing
 
-Study supervision — Prof. Tiratha Raj Singh, CEHTI, Jaypee University of Information Technology.
+**Stability Analysis:**
+- FoldX — ΔΔG calculations (optional, requires installation)
+- Rosetta — Energy scoring (optional, requires installation)  
+- Empirical methods — Built-in, always available
 
-Somatic variant and expression data from [TCGA](https://portal.gdc.cancer.gov) via the Genomic Data Commons.
+**Databases:**
+- STRING — Protein interaction networks
+- KEGG/Reactome — Pathway analysis
+- Built-in motif databases — No external dependencies
 
-## License
+## Why This Matters
 
-Code and documentation: CC-BY-4.0, matching the Zenodo deposit. Please cite the paper and the dataset.
+Most protein generation models only check sequence statistics (amino acid frequency, length distribution). **ProteinForgeR validates biological realism**:
+
+This catches problems like:
+- Sequences that can't fold into stable structures
+- Missing critical functional motifs (active sites, binding domains)
+- Unrealistic host interaction profiles
+- Poor conservation of essential residues
+
+Perfect for computational drug discovery, synthetic biology, and protein engineering research where you need **biologically plausible** sequences, not just statistically similar ones.
+
+## Requirements
+
+- R >= 4.1.0
+- torch (R package — installs libtorch automatically)
+- Biostrings (Bioconductor, for FASTA parsing)
+- ggplot2, dplyr, stringr, bio3d (analysis & visualization)
+
+**Optional External Tools:**
+- FoldX (stability prediction)
+- Rosetta (energy scoring)
+- ESMFold local installation
+- HuggingFace API token (for ESMFold API)
