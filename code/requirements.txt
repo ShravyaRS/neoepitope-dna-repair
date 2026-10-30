@@ -1,0 +1,15 @@
+# Environment specification -- CBAC-D-26-04047
+# Neoepitope prediction integrated with DNA repair gene profiling
+#
+# The versions below are those under which the deposited scripts were verified
+# to reproduce the deposited outputs, including the composite scores in
+# 09_top_ranked_peptides.csv.
+#
+# Python 3.13.9
+pandas==2.3.3
+numpy==2.4.3
+scipy==1.16.0
+networkx==3.6.1
+powerlaw==2.0.0
+matplotlib==3.10.6
+seaborn==0.13.2

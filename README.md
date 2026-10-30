@@ -1,0 +1,131 @@
+<div align="center">
+
+# Neoepitope Prediction Integrated with DNA Repair Gene Profiling
+
+**Shared missense neoepitopes across 29 DNA-repair genes in TCGA BRCA, COAD and OV**
+
+[![Paper](https://img.shields.io/badge/Paper-Comput%20Biol%20Chem-B31B1B)](https://www.sciencedirect.com/journal/computational-biology-and-chemistry)
+[![Data](https://img.shields.io/badge/Data%20%26%20Code-10.5281%2Fzenodo.23376031-1682D4)](https://doi.org/10.5281/zenodo.23376031)
+[![License](https://img.shields.io/badge/License-CC--BY--4.0-green)](https://creativecommons.org/licenses/by/4.0/)
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0006--8013--7892-A6CE39)](https://orcid.org/0009-0006-8013-7892)
+
+<img src="figures/Graphical_Abstract.png" width="860" alt="Graphical abstract">
+
+</div>
+
+---
+
+## What this is
+
+Most neoantigen pipelines rank peptides one patient at a time. This one asks a different question:
+**which missense neoepitopes are produced by more than one mutation?**
+
+Peptides shared across mutations sit between a fully personalised vaccine and an off-the-shelf one,
+and that redundancy is rarely measured. Here it is measured directly, as a bipartite
+mutation–peptide graph over a defined 29-gene DNA-repair set.
+
+Accepted in *Computational Biology and Chemistry* (Elsevier), 28 October 2026.
+
+## Headline numbers
+
+| | |
+|---|---|
+| Somatic calls screened | 516,309 → 2,430 variants → **1,419** missense calls |
+| Distinct variants / samples | 885 variants across 877 tumour samples |
+| Peptide windows | **53,683** 8–11mers from 1,417 productive calls |
+| Peptide–HLA predictions | **429,464** (8 population HLA class I alleles) |
+| Unique mutant peptides | **33,405** |
+| Shared by >1 mutation | **5,420** (16.2%) |
+| Hub peptides (degree > 5) | **836** (2.5%) — all TP53 |
+| Stringent candidates | **73** class I (32 also clear wild-type > 5,000 nM), **127** class II |
+
+Every one of these is reproducible from the deposited data.
+
+## Pipeline
+
+```
+TCGA somatic calls (BRCA, COAD, OV)
+        │  29 DNA-repair genes, missense only
+        ▼
+   1,419 sample-level calls  ──►  53,683 peptide windows (8–11mer)
+        │
+        ▼
+NetMHCpan 4.1 + MHCflurry 2.0 (via pVACseq)   ──►  429,464 peptide–HLA predictions
+IEDB class II tools (NetMHCIIpan)             ──►  105,495 class II predictions
+        │
+        ├──► bipartite mutation–peptide graph ──► degree, hubs, super-hubs
+        │
+        └──► composite score ──► ranked candidates ──► stringent affinity filter
+```
+
+## Composite score
+
+```
+S = 40·s(IC50) + 20·s(FC) + 20·s(share) + 20·s(gene)
+
+s(IC50)  = 1 − (IC50 − 2)/(49,328 − 2)        linear min–max
+s(FC)    = min(fold change, 100)/100           hard cap
+s(share) = min(prediction rows, 100)/100       hard cap
+s(gene)  = TP53 1.0 · BRCA1/2 0.95 · ATM 0.9 · MSH2/MLH1 0.85 · POLE/ATR 0.8 · others 0.7
+```
+
+Two properties worth stating plainly, because they drive the ranking: `s(IC50)` is linear on an
+absolute nanomolar scale, so every peptide binding below 500 nM scores 39.60–40.00 of 40 — the
+affinity term barely discriminates among binders. And 18.2% of predictions reach the sharing cap
+against 0.04% for fold change. **The ranking is therefore driven by sharing and the gene prior
+rather than by predicted affinity**, which is reported openly in the paper rather than glossed.
+
+## Repository layout
+
+```
+code/      analysis and verification scripts
+figures/   figures as published
+docs/      reproduction notes and environment
+```
+
+## Data
+
+All inputs and outputs live in the Zenodo deposit, not here — the prediction tables run to
+hundreds of megabytes:
+
+**https://doi.org/10.5281/zenodo.23376031**
+
+Thirty files: the mutation list, the full class I and class II prediction tables, the
+mutation–peptide edge list, network degrees, the composite-score components, nine supplementary
+tables, the pipeline code, and a pinned environment specification. CC-BY-4.0.
+
+## Reproducing
+
+```bash
+pip install -r code/requirements.txt
+```
+
+See [`docs/REPRODUCE.md`](docs/REPRODUCE.md) for the execution order. External predictors
+(NetMHCpan 4.1, MHCflurry 2.0, NetMHCIIpan) are not redistributable, but their outputs are
+deposited, so every downstream step can be rerun without them.
+
+## Citation
+
+> Shravya R. S., Pallavi B., Singh T. R. Neoepitope Prediction Integrated with DNA Repair Gene
+> Profiling for Precision Oncology. *Computational Biology and Chemistry* (2026).
+> doi:10.1016/j.compbiolchem.2026.xxxxxx
+
+Dataset:
+
+> Shravya R. S., Pallavi B., Singh T. R. (2026). *Neoepitope prediction integrated with DNA repair
+> gene profiling: mutation list, peptide–HLA predictions, network links and composite-score
+> components* \[Data set]. Zenodo. https://doi.org/10.5281/zenodo.23376031
+
+## Credits
+
+Pipeline design, implementation, analysis and manuscript — **Shravya R. S.**
+([@ShravyaRS](https://github.com/ShravyaRS) · [ORCID](https://orcid.org/0009-0006-8013-7892)),
+Department of Biotechnology and Bioinformatics, JSS Academy of Higher Education and Research, Mysuru.
+
+Study supervision — Prof. Tiratha Raj Singh, CEHTI, Jaypee University of Information Technology.
+
+Somatic variant and expression data from [TCGA](https://portal.gdc.cancer.gov) via the Genomic Data Commons.
+
+## License
+
+Code and documentation: CC-BY-4.0, matching the Zenodo deposit. Please cite the paper and the dataset.
