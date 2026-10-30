@@ -138,7 +138,7 @@ tables, the pipeline code, and a pinned environment specification. CC-BY-4.0.
 ## Reproducing
 
 ```bash
-pip install -r code/requirements.txt
+pip install -r requirements.txt
 ```
 
 See [`docs/REPRODUCE.md`](docs/REPRODUCE.md) for the execution order. External predictors
