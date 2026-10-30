@@ -44,6 +44,44 @@ Accepted in *Computational Biology and Chemistry* (Elsevier), 28 October 2026.
 
 Every one of these is reproducible from the deposited data.
 
+## Figures
+
+<table>
+<tr>
+<td width="50%"><img src="figures/Figure_1.png" alt="Figure 1"></td>
+<td width="50%"><img src="figures/Figure_2.png" alt="Figure 2"></td>
+</tr>
+<tr>
+<td><b>1 · The neoepitope landscape.</b> IC50 distribution across all 429,464 peptide–HLA
+combinations, unique peptide counts for the most prolific repair genes, and epitope density
+per mutation.</td>
+<td><b>2 · Network architecture.</b> Mutations per peptide, the hub and super-hub structure,
+mutation-pair clustering, and the degree distribution on log–log axes.</td>
+</tr>
+<tr>
+<td><img src="figures/Figure_3.png" alt="Figure 3"></td>
+<td><img src="figures/Figure_4.png" alt="Figure 4"></td>
+</tr>
+<tr>
+<td><b>3 · Composite scoring.</b> Score distribution across all 33,405 peptides, the top-ranked
+candidates, rank-versus-score behaviour, and component contributions.</td>
+<td><b>4 · Filtering.</b> From 516,309 TCGA somatic calls to the analysed peptide set, with the
+operation and count at every stage.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="50%"><img src="figures/Supplementary_Figure_1.png" alt="Supplementary Figure 1"></td>
+<td width="50%"><img src="figures/Supplementary_Figure_2.png" alt="Supplementary Figure 2"></td>
+</tr>
+<tr>
+<td><b>S1 · Fold-change distribution.</b> Mutant preference is widespread but usually slight:
+89.6% of peptides exceed a fold change of 1, but only 2.3% reach the conventional 10× threshold.</td>
+<td><b>S2 · Translational roadmap.</b> Conceptual only — not supported by data from this study.</td>
+</tr>
+</table>
+
 ## Pipeline
 
 ```
