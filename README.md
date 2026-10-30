@@ -7,7 +7,7 @@
 Pipeline, analysis and figures by **[Shravya R. S.](https://orcid.org/0009-0006-8013-7892)**  
 <sub>Department of Biotechnology and Bioinformatics, JSS Academy of Higher Education and Research, Mysuru</sub>
 
-[![Paper](https://img.shields.io/badge/Paper-Comput%20Biol%20Chem-B31B1B)](https://www.sciencedirect.com/journal/computational-biology-and-chemistry)
+[![Accepted](https://img.shields.io/badge/Accepted-Comput%20Biol%20Chem%202026-B31B1B)](https://www.sciencedirect.com/journal/computational-biology-and-chemistry)
 [![Data](https://img.shields.io/badge/Data%20%26%20Code-10.5281%2Fzenodo.23376031-1682D4)](https://doi.org/10.5281/zenodo.23376031)
 [![License](https://img.shields.io/badge/License-CC--BY--4.0-green)](https://creativecommons.org/licenses/by/4.0/)
 [![ORCID](https://img.shields.io/badge/ORCID-0009--0006--8013--7892-A6CE39)](https://orcid.org/0009-0006-8013-7892)
@@ -109,12 +109,14 @@ deposited, so every downstream step can be rerun without them.
 
 ## Citation
 
-If you use this work, please cite the paper and the dataset:
+The paper is accepted in *Computational Biology and Chemistry* (Elsevier) and is in production.
+Its DOI will be added here once it is published.
 
-- **Paper** — *Computational Biology and Chemistry* (2026), doi:10.1016/j.compbiolchem.2026.xxxxxx
-- **Dataset** — [10.5281/zenodo.23376031](https://doi.org/10.5281/zenodo.23376031)
+Until then, please cite the dataset:
 
-Full author lists and formatted citations are available at both links.
+**[10.5281/zenodo.23376031](https://doi.org/10.5281/zenodo.23376031)**
+
+Formatted citations and the full author list are available at that link.
 
 ## Credits
 
