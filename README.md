@@ -18,7 +18,7 @@ Pipeline, analysis and figures by **[Shravya R. S.](https://orcid.org/0009-0006-
 
 ---
 
-## What this is
+## Overview
 
 Most neoantigen pipelines rank peptides one patient at a time. This one asks a different question:
 **which missense neoepitopes are produced by more than one mutation?**
@@ -29,7 +29,7 @@ mutation–peptide graph over a defined 29-gene DNA-repair set.
 
 Accepted in *Computational Biology and Chemistry* (Elsevier), 28 October 2026.
 
-## Headline numbers
+## Key results
 
 | | |
 |---|---|
